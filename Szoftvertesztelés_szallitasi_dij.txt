@@ -1,0 +1,54 @@
+1. SPECIFIKÁCIÓ (ÜZLETI LOGIKA)
+--------------------------------------------------------------------------------
+* Súly alapú díjak:
+  - 5 kg alatt: 1500 Ft
+  - 5 kg-tól 20 kg-ig: 2500 Ft
+  - 20 kg felett: 5000 Ft
+* Mentesség: Magyarországi szállítás (HU/hu) és 20 000 Ft feletti rendelési értéknél INGYENES.
+* Külföldi szállítás: A szállítási díj KÉTSZERES.
+* Expressz szállítás: Az alapértelmezett szállítási díj 50%-kal növekszik.
+* Korlátozások: A rendelési érték és a tömeg NEM lehet negatív.
+* Országkód: Kétbetűs ISO-kód, kis- vagy nagybetűvel is megadható (HU/hu).
+
+
+2. ÉS 3. FELADAT: TESZTESETEK ÉS ELVÁRT EREDMÉNYEK
+--------------------------------------------------------------------------------
+* T1:  order=10000, weight=3,  country="HU", express=false -> Elvárt: 1500 Ft
+* T2:  order=25000, weight=10, country="hu", express=false -> Elvárt: 0 Ft
+* T3:  order=5000,  weight=5,  country="HU", express=false -> Elvárt: 2500 Ft
+* T4:  order=5000,  weight=12, country="DE", express=false -> Elvárt: 5000 Ft
+* T5:  order=30000, weight=25, country="AT", express=false -> Elvárt: 10000 Ft
+* T6:  order=4000,  weight=2,  country="HU", express=true  -> Elvárt: 2250 Ft
+* T7:  order=15000, weight=22, country="FR", express=true  -> Elvárt: 15000 Ft
+* T8:  order=-500,  weight=4,  country="HU", express=false -> Elvárt: Hiba/Tiltás
+* T9:  order=5000,  weight=-2, country="HU", express=false -> Elvárt: Hiba/Tiltás
+* T10: order=5000,  weight=20, country="HU", express=false -> Elvárt: 2500 Ft
+
+
+4. FELADAT: MANUÁLIS KÓDFUTTATÁS (TÉNYLEGES EREDMÉNYEK)
+--------------------------------------------------------------------------------
+* T1 futási eredménye  -> Tényleges: 1500 Ft  (Sikeres - pontosan egyezik)
+* T2 futási eredménye  -> Tényleges: 5000 Ft  (Hibás - "hu" miatt nem ad ingyenességet, hanem közepes súlyt dupláz)
+* T3 futási eredménye  -> Tényleges: 5000 Ft  (Hibás - pont 5 kg-nál a legdrágább else ágra ugrik)
+* T4 futási eredménye  -> Tényleges: 5000 Ft  (Sikeres - pontosan egyezik)
+* T5 futási eredménye  -> Tényleges: 10000 Ft (Sikeres - pontosan egyezik)
+* T6 futási eredménye  -> Tényleges: 1550 Ft  (Hibás - 50% emelés helyett csak fix 50 Ft-ot ad hozzá)
+* T7 futási eredménye  -> Tényleges: 10050 Ft (Hibás - 50% emelés helyett csak fix 50 Ft-ot ad hozzá)
+* T8 futási eredménye  -> Tényleges: 1500 Ft  (Hibás - ellenőrzés hiányában kiszámolja a negatív rendelést)
+* T9 futási eredménye  -> Tényleges: 1500 Ft  (Hibás - ellenőrzés hiányában kiszámolja a negatív súlyt)
+* T10 futási eredménye -> Tényleges: 5000 Ft  (Hibás - pont 20 kg-nál a legdrágább else ágra ugrik)
+
+5. ÉS 6. FELADAT: DOKUMENTÁLT HIBÁK ÉS REPRODUKÁLÓ TESZTESETEK
+--------------------------------------------------------------------------------
+* Hiba 1: Kisbetűs országkód ("hu") kezelésének hiánya. Nem lép be az belföldi ágba, és külföldiként duplázza meg a díjat.
+  - Reprodukció: calculateShippingCost(25000, 10, "hu", false)
+
+* Hiba 2: Határérték hiba a súly kategóriáknál. Pontosan 5 kg és 20 kg esetén a kód a legdrágább (5000 Ft) sávot alkalmazza.
+  - Reprodukció: calculateShippingCost(5000, 5, "HU", false) vagy calculateShippingCost(5000, 20, "HU", false)
+
+* Hiba 3: Rossz expressz felár számítás. A függvény 50%-os növelés helyett fixen 50 Ft-ot ad hozzá a végösszeghez.
+  - Reprodukció: calculateShippingCost(4000, 2, "HU", true)
+
+* Hiba 4: Bemeneti validáció hiánya. Negatív rendelési érték vagy negatív súly esetén a kód hibajelzés nélkül lefut.
+  - Reprodukció: calculateShippingCost(-500, -2, "HU", false)
+
