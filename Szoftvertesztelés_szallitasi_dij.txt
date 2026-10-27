@@ -23,6 +23,10 @@
 * T8:  order=-500,  weight=4,  country="HU", express=false -> Elvárt: Hiba/Tiltás
 * T9:  order=5000,  weight=-2, country="HU", express=false -> Elvárt: Hiba/Tiltás
 * T10: order=5000,  weight=20, country="HU", express=false -> Elvárt: 2500 Ft
+* T11: order=5000,  weight=3,  country="DE", express=false -> Elvárt: 3000 Ft
+* T12: order=5000,  weight=3,  country="de", express=false -> Elvárt: 3000 Ft
+* T13: order=5000,  weight=3,  country="HUN", express=false -> Elvárt: Hiba/Tiltás (nem kétbetűs kód)
+* T14: order=5000,  weight=3,  country="D1", express=false -> Elvárt: Hiba/Tiltás (nem érvényes ISO-kód)
 
 
 4. FELADAT: MANUÁLIS KÓDFUTTATÁS (TÉNYLEGES EREDMÉNYEK)
@@ -37,6 +41,10 @@
 * T8 futási eredménye  -> Tényleges: 1500 Ft  (Hibás - ellenőrzés hiányában kiszámolja a negatív rendelést)
 * T9 futási eredménye  -> Tényleges: 1500 Ft  (Hibás - ellenőrzés hiányában kiszámolja a negatív súlyt)
 * T10 futási eredménye -> Tényleges: 5000 Ft  (Hibás - pont 20 kg-nál a legdrágább else ágra ugrik)
+* T11 futási eredménye -> Tényleges: 3000 Ft  (Sikeres - a nagybetűs DE külföldiként kétszeres díj)
+* T12 futási eredménye -> Tényleges: 3000 Ft  (Sikeres - a kisbetűs de külföldiként kétszeres díj)
+* T13 futási eredménye -> Tényleges: 3000 Ft  (Hibás - a hárombetűs HUN kódot elfogadja)
+* T14 futási eredménye -> Tényleges: 3000 Ft  (Hibás - a D1 kódot elfogadja)
 
 5. ÉS 6. FELADAT: DOKUMENTÁLT HIBÁK ÉS REPRODUKÁLÓ TESZTESETEK
 --------------------------------------------------------------------------------
@@ -51,4 +59,8 @@
 
 * Hiba 4: Bemeneti validáció hiánya. Negatív rendelési érték vagy negatív súly esetén a kód hibajelzés nélkül lefut.
   - Reprodukció: calculateShippingCost(-500, -2, "HU", false)
+
+* Hiba 5: Az országkód formátumának/érvényességének ellenőrzése hiányzik. A függvény a hárombetűs vagy nem megfelelő kódot is külföldinek tekinti, és díjat számol.
+  - Reprodukció: calculateShippingCost(5000, 3, "HUN", false) vagy calculateShippingCost(5000, 3, "D1", false)
+  - Megjegyzés: A DE/de példák helyes eredményt adnak, de önmagukban nem bizonyítják az ISO-kódok teljes körű validálását.
 
