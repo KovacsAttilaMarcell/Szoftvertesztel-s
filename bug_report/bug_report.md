@@ -4,8 +4,6 @@
     
 *   Pontosan 10000 Ft-os rendelés esetén nem lép be az első feltételbe, így az 5% kedvezmény helyett 0% lesz az alap.
     
-*   Pontosan 25000 Ft-os rendelés esetén az első két feltétel átfedése miatt nem egyértelmű a működés, de itt szerencsére a második érvényesül.
-    
 *   A 50000 Ft feletti feltételben a >= helyett > szerepel, így pontosan 50000 Ft esetén a 15% helyett tévesen 10% kedvezményt ad.
     
 *   A VIP kedvezménynél a százalékpont (0.05) hozzáadása helyett egy egész 5-ös számot ad hozzá a kód, ami 500%-os kedvezményt jelent.
@@ -17,7 +15,8 @@
 
 *   A kód nem tartalmaz ellenőrzést a negatív parkolási időre, így negatív percek esetén is hibásan nullát vagy negatív díjat adhat vissza.
     
-*   Pontosan 15 perces parkolás esetén a kód nem lép be az első feltételbe, és a díjszámításnál tévesen 0 Ft-ot számol az ingyenesség helyett.
+*   A 15 perces ingyenességi határ ellenőrzésénél a kód < operátort használ <= helyett, ezért pontosan 15 percnél nem lép be az ingyenességet kezelő feltételbe. 
+    A későbbi számítás miatt azonban ekkor még helyesen 0 Ft-ot ad vissza.
     
 *   A Math.floor használata miatt lefelé kerekít a kód, így minden megkezdett óra helyett csak a teljesen letelt órákat számlázza ki.
     
@@ -34,7 +33,7 @@
     
 *   Pontosan 65 éves kor esetén egyik korcsoportos feltétel sem teljesül, így az illető nem kapja meg a neki járó 40%-os kedvezményt.
     
-*   A diák kedvezményt a kód független if-ként kezeli, így a legnagyobb kedvezmény kiválasztása helyett összevonja azt a karkockázati kedvezménnyel.
+*   A diákkedvezményt a kód különálló if feltételben kezeli, ezért a legnagyobb kedvezmény kiválasztása helyett összeadja a diák és a korcsoportos kedvezményt, ami ellentétes a specifikációval.
     
 *   A 3D felárnál a kód a 800 Ft-os fix összeg hozzáadása helyett 80%-kal megemeli az addig kalkulált jegyárat.
     
@@ -59,5 +58,3 @@
 *   A Small kategóriánál a <= (kisebb-egyenlő) helyett szigorú < (kisebb) relációt használ, így a pontosan 2 kg-os vagy 30 cm-es csomagok kiesnek innen.
     
 *   A Medium kategóriánál a kód a méretek között || (VAGY) operátort használ az && (ÉS) helyett, így elég egyetlen méretnek 60 cm alatt lennie a besoroláshoz.
-    
-*   Ha egy csomag súly alapján Large lenne, de méretei alapján Small, a kód a merev sorrend miatt tévesen az OVERSIZE felé is csúszhat, ha a Medium feltétel hibásan igazat ad rá.
